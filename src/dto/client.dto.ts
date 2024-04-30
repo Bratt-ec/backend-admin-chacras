@@ -32,6 +32,10 @@ export const clientDTO = psql.define('tb_clients', {
     consumption: {
         type: DataTypes.STRING
     },
+    status: {
+        type: DataTypes.INTEGER,
+        defaultValue: 1
+    },
 },{
     timestamps: true,
     createdAt: true,

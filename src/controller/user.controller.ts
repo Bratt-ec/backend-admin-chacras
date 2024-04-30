@@ -3,10 +3,15 @@ import { UserDTO } from "../dto/user.dto";
 import { catchError, Utils } from "../utils/utils";
 import { UUIDV4 } from "sequelize";
 import { DB_UUID } from "../database/db";
+import { BaseCtrl } from "./base.class";
 
-export class UserCtrl {
+class UserCtrl implements BaseCtrl {
 
-    static async authUser(req: Request, res: Response, next: NextFunction) {
+    getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+
+    async authUser(req: Request, res: Response, next: NextFunction) {
 
         try {
             const { email, password } = req.body;
@@ -62,7 +67,7 @@ export class UserCtrl {
         }
     }
 
-    static async updateUser(req: Request, res: Response, next: NextFunction) {
+    async update(req: Request, res: Response, next: NextFunction) {
         try {
             const { password } = req.body;
             let passEncript = Utils.encryptPassword(password);
@@ -86,7 +91,7 @@ export class UserCtrl {
         }
     }
 
-    static async createUser(req: Request, res: Response, next: NextFunction) {
+    async create(req: Request, res: Response, next: NextFunction) {
         try {
             const { names, lastNames, cedula, email, password } = req.body;
             const fields: string[] = ["names", "lastNames", "cedula", "email", "password"];
@@ -127,4 +132,15 @@ export class UserCtrl {
             catchError(res, error);
         }
     }
+
+    async delete(req: Request, res: Response, next: NextFunction) {
+        throw new Error("Method not implemented.");
+    }
+
+    async get(req: Request, res: Response, next: NextFunction) {
+        throw new Error("Method not implemented.");
+    }
 }
+
+
+export const userCtrl = new UserCtrl();

@@ -1,4 +1,5 @@
 import { Sequelize, UUIDV4 } from "sequelize";
+import { PaymentDTO } from "../dto/payments.dto";
 
 export const psql = new Sequelize('utmach_proy', 'postgres', 'admin2023', {
     host: 'localhost',
@@ -9,8 +10,8 @@ export const psql = new Sequelize('utmach_proy', 'postgres', 'admin2023', {
 export async function connectPostgres(){
     try {
         await psql.authenticate();
-        await psql.sync()
-        console.log('Connection has been established successfully.');
+        await psql.sync();
+        console.log('*****Connection has been established successfully.*****');
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }

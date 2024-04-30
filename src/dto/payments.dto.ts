@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { psql } from '../database/db';
 
-export const paymentDTO = psql.define('tb_payment', {
+export const PaymentDTO = psql.define('tb_payment', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -21,7 +21,7 @@ export const paymentDTO = psql.define('tb_payment', {
     },
     current_consumption: {
         type: DataTypes.STRING,
-        unique: true
+        // unique: true
     },
     last_consumption: {
         type: DataTypes.STRING
@@ -36,10 +36,10 @@ export const paymentDTO = psql.define('tb_payment', {
         type: DataTypes.STRING
     },
     pay_consumption: {
-        type: DataTypes.NUMBER
+        type: DataTypes.DOUBLE
     },
     debt_pending: {
-        type: DataTypes.NUMBER
+        type: DataTypes.DOUBLE
     },
     is_new_connection: {
         type: DataTypes.BOOLEAN
@@ -48,10 +48,14 @@ export const paymentDTO = psql.define('tb_payment', {
         type: DataTypes.BOOLEAN
     },
     interest_due: {
-        type: DataTypes.NUMBER
+        type: DataTypes.DOUBLE
     },
     total_pay: {
-        type: DataTypes.NUMBER
+        type: DataTypes.DOUBLE
+    },
+    status: {
+        type: DataTypes.INTEGER,
+        defaultValue: 1
     },
 },{
     timestamps: true,

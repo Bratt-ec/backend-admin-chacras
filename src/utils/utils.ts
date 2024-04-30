@@ -31,7 +31,7 @@ export function catchError(res: Response, error:any) {
         msgErr = error.original.detail;
     }
 
-    console.log("🚀 ~ createUser ~ error:", error.original.detail)
+    console.log("🚀 ~ error:", error.original.detail)
     Utils.serverResponse({
         response: res,
         code: 403,
