@@ -1,5 +1,11 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, ENUM } from 'sequelize';
 import { psql } from '../database/db';
+
+export enum STATUS_PAY  {
+    PAID = 'PAID',
+    DEBT = 'DEBT',
+    NONE = 'NONE'
+}
 
 export const clientDTO = psql.define('tb_clients', {
     id: {
@@ -32,6 +38,10 @@ export const clientDTO = psql.define('tb_clients', {
     consumption: {
         type: DataTypes.STRING
     },
+    status_payment: {
+        type: DataTypes.ENUM('PAID','DEBT','NONE' ),
+        defaultValue: 'NONE'
+    },
     status: {
         type: DataTypes.INTEGER,
         defaultValue: 1
@@ -41,3 +51,5 @@ export const clientDTO = psql.define('tb_clients', {
     createdAt: true,
     updatedAt: true
 });
+
+// clientDTO.drop();

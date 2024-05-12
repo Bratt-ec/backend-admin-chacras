@@ -1,5 +1,6 @@
 import { Sequelize, UUIDV4 } from "sequelize";
 import { PaymentDTO } from "../dto/payments.dto";
+import { clientDTO } from "../dto/client.dto";
 
 export const psql = new Sequelize('utmach_proy', 'postgres', 'admin2023', {
     host: 'localhost',

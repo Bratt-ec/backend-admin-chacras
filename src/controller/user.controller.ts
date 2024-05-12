@@ -42,6 +42,7 @@ class UserCtrl implements BaseCtrl {
                 },
                 attributes: {exclude: ['password']},
             });
+            console.log("🚀 ~ authUser ~ resp:", resp)
 
             if (!resp.length) {
                 return Utils.serverResponse({

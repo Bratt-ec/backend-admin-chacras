@@ -3,19 +3,51 @@ import { ParamsDictionary } from "express-serve-static-core";
 import { ParsedQs } from "qs";
 import { BaseCtrl } from "./base.class";
 import { catchError, Utils } from "../utils/utils";
+import { clientDTO } from "../dto/client.dto";
 
 class ClientCtrl implements BaseCtrl {
 
     async create(req: Request, res: Response, next: NextFunction){
         try {
 
+            const fields: string[] = [
+                "names", "lastNames", "cedula", "phone",
+                "address", "number_meter", "consumption"
+            ];
+
+            const errors: string[] = [];
+
+            for (const iterator of fields) {
+                if (!req.body[iterator] || req.body[iterator] == '')  {
+                    errors.push(`El campo ${iterator} es requerido`)
+                }
+            }
+
+            if (errors.length) {
+                Utils.serverResponse({
+                    response: res,
+                    code: 403,
+                    validations: errors,
+                    msg: 'Error en los campos',
+                    value: 2,
+                    error: true
+                });
+                return;
+            }
+
+            const response = await clientDTO.create({
+                ...req.body
+            });
+            console.log("🚀 ~ create ~ response:", response.dataValues)
+
             Utils.serverResponse({
                 response: res,
                 code: 200,
                 msg: 'Created',
                 value: 1,
-                data: {}
+                data: response.dataValues
             });
+
         } catch (error:any) {
             catchError(res, error);
         }
@@ -24,20 +56,60 @@ class ClientCtrl implements BaseCtrl {
     async update(req: Request, res: Response, next: NextFunction){
         try {
 
-            // const response = await DTO.update({
-            //     ...req.body
-            // }, {
-            //     where: {
-            //         id: req.params.id
-            //     }
-            // });
+            if (!req.params.id) {
+                Utils.serverResponse({
+                    response: res,
+                    code: 403,
+                    validations: [
+                        'El parámetro :id es obrigatorio'
+                    ],
+                    msg: 'Error',
+                    value: 2,
+                    error: true
+                });
+                return;
+            }
+
+
+            const fields: string[] = [
+                "names", "lastNames", "cedula", "phone",
+                "address", "number_meter", "consumption"
+            ];
+
+            const errors: string[] = [];
+
+            for (const iterator of fields) {
+                if (!req.body[iterator] || req.body[iterator] == '')  {
+                    errors.push(`El campo ${iterator} es requerido`)
+                }
+            }
+
+            if (errors.length) {
+                Utils.serverResponse({
+                    response: res,
+                    code: 403,
+                    validations: errors,
+                    msg: 'Error en los campos',
+                    value: 2,
+                    error: true
+                });
+                return;
+            }
+
+            const response = await clientDTO.update({
+                ...req.body
+            }, {
+                where: {
+                    id: req.params.id
+                }
+            });
 
             Utils.serverResponse({
                 response: res,
                 code: 200,
                 msg: 'Updated',
                 value: 1,
-                data: {}
+                data: { ...req.body }
             });
         } catch (error:any) {
             catchError(res, error);
@@ -61,13 +133,13 @@ class ClientCtrl implements BaseCtrl {
                 return;
             }
 
-            // await DTO.update({
-            //     status: 0
-            // }, {
-            //     where: {
-            //         id: req.params.id
-            //     }
-            // });
+            await clientDTO.update({
+                status: 0
+            }, {
+                where: {
+                    id: req.params.id
+                }
+            });
 
             Utils.serverResponse({
                 response: res,
@@ -99,18 +171,30 @@ class ClientCtrl implements BaseCtrl {
                 return;
             }
 
-            // const response = await DTO.findOne({
-            //     where: {
-            //         id: req.params.id
-            //     }
-            // });
+            const response = await clientDTO.findOne({
+                where: {
+                    id: req.params.id
+                }
+            });
+
+            if (!response) {
+                Utils.serverResponse({
+                    response: res,
+                    code: 403,
+                    msg: `No existe un pago con el id: ${req.params.id}`,
+                    value: 2,
+                    error: true
+                });
+                return;
+            }
+
 
             Utils.serverResponse({
                 response: res,
                 code: 200,
-                msg: 'Pago creado',
+                msg: 'cliente creado',
                 value: 1,
-                data: {}
+                data: {...response.dataValues}
             });
         } catch (error:any) {
             catchError(res, error);
@@ -119,12 +203,19 @@ class ClientCtrl implements BaseCtrl {
 
     async getAll(req: Request, res: Response, next: NextFunction){
         try {
+
+            const response = await clientDTO.findAll({
+                where: {
+                    "status": 1
+                }
+            });
+
             Utils.serverResponse({
                 response: res,
                 code: 200,
-                msg: 'Pago creado',
+                msg: 'Listado de clientes',
                 value: 1,
-                data: []
+                data: response.map(item => item.dataValues)
             });
         } catch (error:any) {
             catchError(res, error);
