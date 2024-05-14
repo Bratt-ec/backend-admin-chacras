@@ -4,6 +4,8 @@ import { ParsedQs } from "qs";
 import { BaseCtrl } from "./base.class";
 import { catchError, Utils } from "../utils/utils";
 import { PaymentDTO } from "../dto/payments.dto";
+import { clientDTO } from "../dto/client.dto";
+import { Op } from "sequelize";
 
 class PaymentCtrl implements BaseCtrl {
 
@@ -13,8 +15,11 @@ class PaymentCtrl implements BaseCtrl {
             const response = await PaymentDTO.findAll({
                 where: {
                     "status": 1
-                }
+                },
+                include: clientDTO
             });
+
+            console.log("🚀 ~ getAll ~ response:", response)
 
             Utils.serverResponse({
                 response: res,
@@ -32,7 +37,7 @@ class PaymentCtrl implements BaseCtrl {
         try {
 
             const fields: string[] = [
-                "client", "date_emission", "date_expiry", "current_consumption",
+                "tb_client_id", "date_emission", "date_expiry", "current_consumption",
                 "last_consumption", "month", "code", "num_payment_info", "pay_consumption",
                 "debt_pending", "is_new_connection", "is_reconnection", "interest_due","total_pay"
             ];
@@ -198,6 +203,31 @@ class PaymentCtrl implements BaseCtrl {
                 msg: 'Detalle de un Pago',
                 value: 1,
                 data: {...response.dataValues}
+            });
+        } catch (error:any) {
+            catchError(res, error);
+        }
+    }
+
+    async getNumberPaymentDoc(req: Request, res: Response, next: NextFunction){
+        try {
+
+            const response = await PaymentDTO.findOne({
+                order: [['createdAt', 'DESC']]
+            });
+
+            let docNumber = 1001;
+
+            if (response) {
+                docNumber = response.dataValues.num_payment_info + 1;
+            }
+
+            Utils.serverResponse({
+                response: res,
+                code: 200,
+                msg: 'Numero de doc de Pago',
+                value: 1,
+                data: docNumber
             });
         } catch (error:any) {
             catchError(res, error);

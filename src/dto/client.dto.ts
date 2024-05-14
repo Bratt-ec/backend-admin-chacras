@@ -1,5 +1,6 @@
 import { DataTypes, ENUM } from 'sequelize';
 import { psql } from '../database/db';
+import { PaymentDTO } from './payments.dto';
 
 export enum STATUS_PAY  {
     PAID = 'PAID',

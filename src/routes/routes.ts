@@ -3,6 +3,7 @@ import { userCtrl } from "../controller/user.controller";
 import { ApiRoute } from "./api_routes";
 import { paymentCtrl } from "../controller/payment.controller";
 import { clientCtrl } from "../controller/client.controller";
+import { debtCtrl } from "../controller/debt.controller";
 
 const router = express.Router();
 
@@ -16,7 +17,15 @@ export function routes () {
     router.patch(ApiRoute.update_payment, paymentCtrl.update);
     router.get(ApiRoute.get_payment, paymentCtrl.get);
     router.get(ApiRoute.get_payments, paymentCtrl.getAll);
+    router.get(ApiRoute.get_number_payment, paymentCtrl.getNumberPaymentDoc);
     router.delete(ApiRoute.delete_payment, paymentCtrl.delete);
+
+    // DEBTS ******************************************
+    router.post(ApiRoute.create_debt, debtCtrl.create);
+    router.patch(ApiRoute.update_debt, debtCtrl.update);
+    router.get(ApiRoute.get_debt, debtCtrl.get);
+    router.get(ApiRoute.get_debts, debtCtrl.getAll);
+    router.delete(ApiRoute.delete_debt, debtCtrl.delete);
 
     // CLIENTS ******************************************
     router.post(ApiRoute.create_client, clientCtrl.create);

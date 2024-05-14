@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { psql } from '../database/db';
+import { clientDTO } from './client.dto';
 
 export const PaymentDTO = psql.define('tb_payment', {
     id: {
@@ -9,8 +10,8 @@ export const PaymentDTO = psql.define('tb_payment', {
         unique: true,
         primaryKey: true
     },
-    client: {
-        type: DataTypes.STRING,
+    tb_client_id: {
+        type: DataTypes.UUID,
         allowNull: false,
     },
     date_emission: {
@@ -33,7 +34,7 @@ export const PaymentDTO = psql.define('tb_payment', {
         type: DataTypes.STRING
     },
     num_payment_info: {
-        type: DataTypes.STRING
+        type: DataTypes.INTEGER
     },
     pay_consumption: {
         type: DataTypes.DOUBLE
@@ -62,3 +63,6 @@ export const PaymentDTO = psql.define('tb_payment', {
     createdAt: true,
     updatedAt: true
 });
+
+// PaymentDTO.drop({cascade: true});
+PaymentDTO.belongsTo(clientDTO, { foreignKey: 'tb_client_id' });
