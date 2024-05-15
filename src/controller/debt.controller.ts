@@ -1,19 +1,58 @@
 import { Request, Response, NextFunction } from "express";
 import { BaseCtrl } from "./base.class";
 import { catchError, Utils } from "../utils/utils";
-
+import { DebtDTO } from "../dto/debts.dto";
+import { clientDTO } from "../dto/client.dto";
+import { UserDTO } from "../dto/user.dto";
 
 class DebtCtrl implements BaseCtrl {
+
     async create(req: Request, res: Response, next: NextFunction){
         try {
+
+            const fields: string[] = [
+                "tb_client_id", "interest_due", "month", "year","total_debt"
+            ];
+            const errors: string[] = [];
+
+            for (const iterator of fields) {
+                if (!req.body[iterator] && typeof req.body[iterator] == 'boolean' && typeof req.body[iterator] == 'number')  {
+                    errors.push(`El campo ${iterator} es requerido`)
+                }
+            }
+
+            if (errors.length) {
+                Utils.serverResponse({
+                    response: res,
+                    code: 403,
+                    validations: errors,
+                    msg: 'Error en los campos',
+                    value: 2,
+                    error: true
+                });
+                return;
+            }
+
+            await clientDTO.update({
+                status_payment: 'DEBT'
+            }, {
+                where: {
+                    id: req.body.tb_client_id
+                }
+            });
+
+            const response = await DebtDTO.create({
+                ...req.body
+            });
 
             Utils.serverResponse({
                 response: res,
                 code: 200,
                 msg: 'Created',
                 value: 1,
-                data: {}
+                data: response.dataValues
             });
+
         } catch (error:any) {
             catchError(res, error);
         }
@@ -22,20 +61,34 @@ class DebtCtrl implements BaseCtrl {
     async update(req: Request, res: Response, next: NextFunction){
         try {
 
-            // const response = await DTO.update({
-            //     ...req.body
-            // }, {
-            //     where: {
-            //         id: req.params.id
-            //     }
-            // });
+            if (!req.params.id) {
+                Utils.serverResponse({
+                    response: res,
+                    code: 403,
+                    validations: [
+                        'El parámetro :id es obrigatorio'
+                    ],
+                    msg: 'Error',
+                    value: 2,
+                    error: true
+                });
+                return;
+            }
+
+            const response = await DebtDTO.update({
+                ...req.body
+            }, {
+                where: {
+                    id: req.params.id
+                }
+            });
 
             Utils.serverResponse({
                 response: res,
                 code: 200,
                 msg: 'Updated',
                 value: 1,
-                data: {}
+                data: req.body
             });
         } catch (error:any) {
             catchError(res, error);
@@ -97,11 +150,11 @@ class DebtCtrl implements BaseCtrl {
                 return;
             }
 
-            // const response = await DTO.findOne({
-            //     where: {
-            //         id: req.params.id
-            //     }
-            // });
+            const response = await DebtDTO.findOne({
+                where: {
+                    id: req.params.id
+                }
+            });
 
             Utils.serverResponse({
                 response: res,
@@ -117,12 +170,24 @@ class DebtCtrl implements BaseCtrl {
 
     async getAll(req: Request, res: Response, next: NextFunction){
         try {
+
+            const response = await DebtDTO.findAll({
+                where: {
+                    "status": 1
+                },
+                order:[
+                    ['createdAt', 'DESC']
+                ],
+                include: clientDTO
+            });
+
+
             Utils.serverResponse({
                 response: res,
                 code: 200,
-                msg: 'Pago creado',
+                msg: 'Listado de deudas',
                 value: 1,
-                data: []
+                data: response.map(item => item.dataValues)
             });
         } catch (error:any) {
             catchError(res, error);
