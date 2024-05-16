@@ -26,6 +26,7 @@ export function routes () {
     router.get(ApiRoute.get_debt, debtCtrl.get);
     router.get(ApiRoute.get_debts, debtCtrl.getAll);
     router.delete(ApiRoute.delete_debt, debtCtrl.delete);
+    router.get(ApiRoute.get_debt_client, debtCtrl.getDebtClient);
 
     // CLIENTS ******************************************
     router.post(ApiRoute.create_client, clientCtrl.create);

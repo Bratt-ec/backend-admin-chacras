@@ -6,6 +6,8 @@ import { catchError, Utils } from "../utils/utils";
 import { PaymentDTO } from "../dto/payments.dto";
 import { clientDTO } from "../dto/client.dto";
 import { Op } from "sequelize";
+import { debtCtrl } from "./debt.controller";
+import { DebtDTO } from "../dto/debts.dto";
 
 class PaymentCtrl implements BaseCtrl {
 
@@ -16,6 +18,9 @@ class PaymentCtrl implements BaseCtrl {
                 where: {
                     "status": 1
                 },
+                order:[
+                    ['createdAt', 'DESC']
+                ],
                 include: clientDTO
             });
 
@@ -59,6 +64,20 @@ class PaymentCtrl implements BaseCtrl {
                     error: true
                 });
                 return;
+            }
+
+            if (req.body['id_debts'] ) {
+                for (const iDebt of req.body['id_debts']) {
+                    await DebtDTO.update({
+                        debt_status:'paid'
+                    }, {
+                        where: {
+                            id: iDebt
+                        }
+                    });
+                }
+
+                req.body['debt_pending'] = 0;
             }
 
             const response = await PaymentDTO.create({

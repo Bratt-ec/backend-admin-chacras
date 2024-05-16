@@ -20,5 +20,6 @@ export class ApiRoute {
     static readonly get_debt = "/debt/:id";
     static readonly get_debts = "/debts";
     static readonly create_debt = "/debt/create";
+    static readonly get_debt_client = "/debts/clients/:id";
     static readonly delete_debt = "/debt/delete/:id";
 }

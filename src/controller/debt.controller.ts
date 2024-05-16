@@ -4,6 +4,7 @@ import { catchError, Utils } from "../utils/utils";
 import { DebtDTO } from "../dto/debts.dto";
 import { clientDTO } from "../dto/client.dto";
 import { UserDTO } from "../dto/user.dto";
+import { PaymentDTO } from "../dto/payments.dto";
 
 class DebtCtrl implements BaseCtrl {
 
@@ -188,6 +189,63 @@ class DebtCtrl implements BaseCtrl {
                 msg: 'Listado de deudas',
                 value: 1,
                 data: response.map(item => item.dataValues)
+            });
+        } catch (error:any) {
+            catchError(res, error);
+        }
+    }
+
+    async getDebtClient(req: Request, res: Response, next: NextFunction){
+        try {
+
+            if (!req.params.id) {
+                Utils.serverResponse({
+                    response: res,
+                    code: 403,
+                    validations: [
+                        'El parámetro :id es obrigatorio'
+                    ],
+                    msg: 'Error',
+                    value: 2,
+                    error: true
+                });
+                return;
+            }
+
+            const response = await DebtDTO.findAll({
+                where: {
+                    tb_client_id: req.params.id,
+                    debt_status: 'pending'
+                },
+                include: clientDTO
+            });
+
+            let total = 0;
+            let id_debts = []
+
+            for (const iterator of response) {
+                console.log("🚀 ~ getDebtClient ~ iterator:", iterator.dataValues)
+                total += iterator.dataValues.total_debt;
+                id_debts.push(iterator.dataValues.id)
+            }
+
+            const lastConsumption = await PaymentDTO.findAll({
+                where: {
+                    tb_client_id: req.params.id
+                },
+                include: clientDTO
+            });
+
+            Utils.serverResponse({
+                response: res,
+                code: 200,
+                msg: 'Detalle deuda cliente',
+                value: 1,
+                data: {
+                    totalDebt: total,
+                    debts: id_debts,
+                    lastConsumption: lastConsumption.length ? lastConsumption[0].dataValues.current_consumption : 0
+                }
             });
         } catch (error:any) {
             catchError(res, error);
