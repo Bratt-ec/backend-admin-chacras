@@ -44,7 +44,7 @@ class PaymentCtrl implements BaseCtrl {
             const fields: string[] = [
                 "tb_client_id", "date_emission", "date_expiry", "current_consumption",
                 "last_consumption", "month", "code", "num_payment_info", "pay_consumption",
-                "debt_pending", "is_new_connection", "is_reconnection", "interest_due","total_pay"
+                "debt_pending", "new_connection", "reconnection", "interest_due","total_pay"
             ];
             const errors: string[] = [];
 
@@ -84,12 +84,19 @@ class PaymentCtrl implements BaseCtrl {
                 ...req.body
             });
 
+            const detailCreated = await PaymentDTO.findOne({
+                where: {
+                    id: response.dataValues.id
+                },
+                include: clientDTO
+            });
+
             Utils.serverResponse({
                 response: res,
                 code: 200,
                 msg: 'Pago creado',
                 value: 1,
-                data: {...response.dataValues}
+                data: {...detailCreated?.dataValues}
             });
         } catch (error:any) {
             catchError(res, error);
@@ -102,7 +109,7 @@ class PaymentCtrl implements BaseCtrl {
             const fields: string[] = [
                 "client", "date_emission", "date_expiry", "current_consumption",
                 "last_consumption", "month", "code", "num_payment_info", "pay_consumption",
-                "debt_pending", "is_new_connection", "is_reconnection", "interest_due","total_pay"
+                "debt_pending", "new_connection", "reconnection", "interest_due","total_pay"
             ];
             const errors: string[] = [];
 
@@ -202,7 +209,8 @@ class PaymentCtrl implements BaseCtrl {
             const response = await PaymentDTO.findOne({
                 where: {
                     id: req.params.id
-                }
+                },
+                include: clientDTO
             });
 
             if (!response) {

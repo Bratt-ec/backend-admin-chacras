@@ -42,11 +42,11 @@ export const PaymentDTO = psql.define('tb_payment', {
     debt_pending: {
         type: DataTypes.DOUBLE
     },
-    is_new_connection: {
-        type: DataTypes.BOOLEAN
+   new_connection: {
+        type: DataTypes.DOUBLE
     },
-    is_reconnection: {
-        type: DataTypes.BOOLEAN
+   reconnection: {
+        type: DataTypes.DOUBLE
     },
     interest_due: {
         type: DataTypes.DOUBLE
