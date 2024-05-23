@@ -77,7 +77,7 @@ class PaymentCtrl implements BaseCtrl {
                     });
                 }
 
-                req.body['debt_pending'] = 0;
+                // req.body['debt_pending'] = 0;
             }
 
             const response = await PaymentDTO.create({

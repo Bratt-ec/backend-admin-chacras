@@ -71,22 +71,74 @@ class UserCtrl implements BaseCtrl {
     async update(req: Request, res: Response, next: NextFunction) {
         try {
             const { password } = req.body;
-            let passEncript = Utils.encryptPassword(password);
-            if (!password) return Utils.serverResponse({
+
+
+            const resp = await UserDTO.findOne({
+                where: {
+                    id: req.params.id
+                }
+            })
+
+            if (!resp) return Utils.serverResponse({
                 response: res,
                 code: 403,
-                msg: "La contraseña es requerida",
+                msg: "El usuario que intenta actaulizar no existe",
                 value: 2,
                 error: true
             });
-            await UserDTO.update({
-                password: passEncript
-            }, {
+
+            const {names, lastNames, email, password:passDTO } = resp.dataValues;
+
+            const objUpdate = {
+                names,
+                lastNames,
+                email,
+                password: passDTO
+            }
+
+            const body = req.body;
+
+            if (body.names) {
+                objUpdate.names = body.names
+            }
+
+            if (body.lastNames) {
+                objUpdate.lastNames = body.lastNames
+            }
+
+            if (body.email) {
+                objUpdate.email = body.email
+            }
+
+            if (password) {
+                let passEncript = Utils.encryptPassword(password);
+                objUpdate.password = passEncript
+            }
+
+            console.log("🚀 ~ update ~ objUpdate:", objUpdate)
+
+            await UserDTO.update(objUpdate, {
                 where: {
                     id: req.params.id
                 }
             });
-            res.json('Usuario Actualizado');
+
+            const updated = await UserDTO.findOne({
+                where: {
+                    id: req.params.id
+                },
+                attributes: {exclude: ['password']},
+            })
+
+
+            Utils.serverResponse({
+                response: res,
+                code: 200,
+                msg: 'Updated',
+                value: 1,
+                data: updated?.dataValues
+            });
+
         } catch (error) {
             catchError(res, error);
         }
